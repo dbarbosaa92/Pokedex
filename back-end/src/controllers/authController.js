@@ -53,6 +53,7 @@ exports.login = async (req, res) => {
         res.json({token})
 
     } catch (error) {
+        console.log("ERRO LOGIN:", error)
         res.status(500).json({ error: 'Problema no servidor'})
     }
 }
