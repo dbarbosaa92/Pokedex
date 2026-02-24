@@ -3,6 +3,7 @@ const cors = require('cors')
 require('dotenv').config()
 const authRoutes = require('./src/routes/authRoutes')
 const userRoutes = require('./src/routes/userRoutes')
+const favoriteRoutes = require("./src/routes/favoriteRoutes")
 
 const sequelize = require('./src/config/database')
 
@@ -12,6 +13,7 @@ app.use(cors())
 app.use(express.json())
 app.use('/auth', authRoutes)
 app.use('/user', userRoutes)
+app.use("/favorites", favoriteRoutes)
 
 //HTTPs
 app.get('/', (req, res) => {

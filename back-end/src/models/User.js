@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize')
 const sequelize = require('../config/database')
+const Favorite = require('./Favorite')
 
 const User = sequelize.define('User', {
     id: {
@@ -21,5 +22,8 @@ const User = sequelize.define('User', {
         allowNull: false 
     }
 })
+
+User.hasMany(Favorite)
+Favorite.belongsTo(User)
 
 module.exports = User
