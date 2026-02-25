@@ -1,29 +1,27 @@
-const jwt = require('jsonwebtoken')
+const jwt = require("jsonwebtoken")
 
 module.exports = (req, res, next) => {
+
     const authHeader = req.headers.authorization
 
-    if(!authHeader) {
-        return res.status(401).json({error: 'Token nao fornecido'})
+    if(!authHeader){
+        return res.status(401).json({ error: "Token nao fornecido" })
     }
 
-    const parts = authHeader.split(' ')
+    const token = authHeader.split(" ")[1]
 
-    if(parts.length !== 2){
-        return res.status(401).json({error: 'Erro no formato do token'})
-    }
+    try {
 
-    const [scheme, token] = parts
-
-    if(!/^Bearer$/i.test(scheme)){
-        return res.status(401).json({error: 'Token mal formatado'})
-    }
-
-    try{
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
+
         req.userId = decoded.id
+
         next()
-    } catch(err) {
-        return res.status(401).json({error: 'Token inválido'})
+
+    } catch {
+
+        res.status(401).json({ error: "Token invalido" })
+
     }
+
 }

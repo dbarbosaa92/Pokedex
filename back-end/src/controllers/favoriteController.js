@@ -1,10 +1,10 @@
 const Favorite = require('../models/Favorite')
 
-exports.addFavorite = async (req, res) => {
+module.exports = {
 
-    try{
+    async add(req, res) {
 
-        const {pokemonId, pokemonName} = req.body
+        const { pokemonId, pokemonName } = req.body
 
         const favorite = await Favorite.create({
             pokemonId,
@@ -13,23 +13,34 @@ exports.addFavorite = async (req, res) => {
         })
 
         res.status(201).json(favorite)
-    } catch (error) {
-        res.status(500).json({ error: 'Erro ao salvar favorito'})
-    }
-}
 
-exports.getFavorites = async (req, res) => {
+    },
 
-    try{
+    async list(req, res) {
+
         const favorites = await Favorite.findAll({
-
-            where: {UserId: req.userId}
-
+            where: {
+                UserId: req.userId
+            }
         })
 
         res.json(favorites)
 
-    } catch {
-        res.status(500).json({ error: 'Erro ao buscar favoritos'})
+    },
+
+    async remove(req, res){
+
+        const { id } = req.params
+
+        await Favorite.destroy({
+            where: {
+                id,
+                UserId: req.userId
+            }
+        })
+
+        res.json({ message: "Removido com sucesso" })
+
     }
+
 }

@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import ProtectedRoute from './components/ProtectedRoute'
+import Favorites from './pages/Favorites'
 
 function App() {
   return (
@@ -18,6 +19,8 @@ function App() {
           </ProtectedRoute>
         } 
       /> 
+
+      <Route path="/favorites" element={<Favorites />} />
 
     </Routes>
   )

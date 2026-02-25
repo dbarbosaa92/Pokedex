@@ -23,7 +23,12 @@ const User = sequelize.define('User', {
     }
 })
 
-User.hasMany(Favorite)
-Favorite.belongsTo(User)
+User.hasMany(Favorite, {
+    foreignKey: 'UserId'
+})
+
+Favorite.belongsTo(User, {
+    foreignKey: 'UserId'
+})
 
 module.exports = User

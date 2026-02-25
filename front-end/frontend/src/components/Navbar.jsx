@@ -12,7 +12,12 @@ function Navbar() {
     return (
         <nav className='navbar'>
 
-            <h2>Pokédex</h2>
+            <a href="/dashboard"><h2>Pokédex</h2></a>
+            
+
+            <button onClick={() => navigate('/favorites')}>
+                Favoritos
+            </button>
 
             <button onClick={handleLogout}>
                 Logout
