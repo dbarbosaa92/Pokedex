@@ -1,34 +1,39 @@
-import { useEffect, useState } from "react";
-import api from '../services/api'
-import Navbar from "../components/Navbar";
+import { useEffect, useState } from "react"
+import api from "../services/api"
+import Navbar from "../components/Navbar"
+import typeColors from "../utils/typeColors"
 
-function Favorites() {
+function Favorites(){
 
     const [favorites, setFavorites] = useState([])
 
     useEffect(() => {
-
-        async function loadFavorites() {
-            const response = await api.get('/favorites')
-            setFavorites(response.data)
-        }
-
         loadFavorites()
-
     }, [])
 
-    async function handleRemove(id) {
+    async function loadFavorites(){
         try{
+            const response = await api.get("/favorites")
+            setFavorites(response.data)
+        }catch(err){
+            console.error(err)
+        }
+    }
+
+    async function removeFavorite(id){
+
+        try{
+
             await api.delete(`/favorites/${id}`)
 
-            //remove do estado sem precisar recarregar tudo
-            setFavorites(favorites.filter(fav => fav.id !== id))
-        } catch (err) {
+            setFavorites(prev =>
+                prev.filter(f => f.id !== id)
+            )
 
+        }catch(err){
             console.error(err)
-
-            alert('Erro ao remover favorito')
         }
+
     }
 
     return(
@@ -36,31 +41,56 @@ function Favorites() {
 
             <Navbar />
 
-            <h1>Meus Favoritos</h1>
+            <div className="dashboard">
 
-            <div className="pokemon-grid">
+                <h1>❤️ Meus Favoritos</h1>
 
-                {favorites.map(fav => (
+                <div className="pokemon-grid">
 
-                    <div key={fav.id} className="pokemon-card">
+                    {favorites.map(fav => {
 
-                        <img
-                            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${fav.pokemonId}.png`}
-                            alt={fav.pokemonName}
-                        />
+                        const color =
+                            typeColors[fav.pokemonType] || "#777"
 
-                        <h3>{fav.pokemonName}</h3>
+                        const imageUrl =
+                            `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${fav.pokemonId}.png`
 
-                        <button onClick={() => handleRemove(fav.id)}>Remover</button>
+                        return(
 
-                    </div>
+                            <div
+                                key={fav.id}
+                                className="pokemon-card"
+                                style={{ backgroundColor: color }}
+                            >
 
-                ))}
+                                <img
+                                    src={imageUrl}
+                                    alt={fav.pokemonName}
+                                />
+
+                                <h3>
+                                    #{fav.pokemonId} - {fav.pokemonName}
+                                </h3>
+
+                                <button
+                                    onClick={() =>
+                                        removeFavorite(fav.id)
+                                    }
+                                >
+                                    💔 Remover
+                                </button>
+
+                            </div>
+
+                        )
+
+                    })}
+
+                </div>
 
             </div>
 
         </div>
-
     )
 }
 

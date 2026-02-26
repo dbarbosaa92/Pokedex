@@ -21,6 +21,7 @@ function Dashboard(){
     }, [])
     
     const [pokemons, setPokemons] = useState([])
+    const [favorites, setFavorites] = useState([])
 
     useEffect(() => {
 
@@ -30,6 +31,7 @@ function Dashboard(){
             )
 
             const results = response.data.results
+
 
             const pokemonData = await Promise.all(
                 results.map(async (pokemon) => {
@@ -41,6 +43,19 @@ function Dashboard(){
             setPokemons(pokemonData)
         }
         loadPokemons()
+    }, [])
+
+    useEffect(() => {
+        async function loadFavorites(){
+            try{
+                const response = await api.get('/favorites')
+                setFavorites(response.data)
+            } catch(err){
+                console.error(err)
+            }
+        }
+
+        loadFavorites()
     }, [])
 
 
@@ -57,13 +72,15 @@ function Dashboard(){
             )} */}
 
             <div className='dashboard'>
-                <h1>Bem-vindo à Pokédex 🎮</h1>
+                <h1>Bem-vindo à Pokédex ◓⃙ 🎮</h1>
 
                 <div className='pokemon-grid'>
                     {pokemons.map(pokemon => (
                         <PokemonCard
                             key={pokemon.id}
                             pokemon={pokemon}
+                            favorites={favorites}
+                            setFavorites={setFavorites}
                             />
                     ))}
                 </div>
