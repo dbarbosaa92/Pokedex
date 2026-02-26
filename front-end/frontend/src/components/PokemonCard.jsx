@@ -1,83 +1,97 @@
-import { useState, useEffect } from "react"
-import api from "../services/api"
-import typeColors from "../utils/typeColors"
+import {useState, useEffect} from 'react'
+import api from '../services/api'
+import { useNavigate } from 'react-router-dom'
 
-
-function PokemonCard({ pokemon, favorites, setFavorites }) {
-
-     console.log(pokemon)
-
+function PokemonCard({pokemon}) {
     const [isFavorite, setIsFavorite] = useState(false)
     const [favoriteId, setFavoriteId] = useState(null)
 
-    useEffect(() => {
-        const fav = favorites.find(
-            f => f.pokemonId === pokemon.id
-        )
+    const navigate = useNavigate()
 
-        if(fav){
-            setIsFavorite(true)
-            setFavoriteId(fav.id)
+    useEffect(() => {
+        checkFavorite()
+    }, [])
+
+    async function checkFavorite(){
+        try{
+            const response = await api.get('/favorites')
+
+            const fav = response.data.find(
+                f => f.pokemonId === pokemon.id
+            )
+
+            if(fav){
+                setIsFavorite(true)
+                setFavoriteId(fav.id)
+            }
+        } catch(err) {
+            console.error(err)
         }
-    }, [favorites, pokemon.id])
+    }
 
     async function handleFavorite(){
-
         try{
-
             if(isFavorite){
-
                 await api.delete(`/favorites/${favoriteId}`)
-
-                setFavorites(prev => 
-                    prev.filter(f => f.id !== favoriteId)
-                )
 
                 setIsFavorite(false)
                 setFavoriteId(null)
-
-            }else{
-
-                const response = await api.post("/favorites", {
+            } else {
+                const response = await api.post('/favorites', {
                     pokemonId: pokemon.id,
                     pokemonName: pokemon.name
                 })
 
-                setFavorites(prev => [...prev, response.data])
-
                 setIsFavorite(true)
                 setFavoriteId(response.data.id)
-
             }
-
-        }catch(err){
+        } catch(err) {
             console.error(err)
         }
-
     }
 
-    const imageUrl =
+     const imageUrl =
     `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`
 
-    const mainType = pokemon.types[0].type.name 
-    const color = typeColors[mainType] || '#777'
 
-   
+    return(
+        <div 
+        className="pokedex-card"
+        onClick={() => navigate(`/pokemon/${pokemon.id}`)}        
+        >
 
-    return (
+            <div className="card-header">
 
-        <div className="pokemon-card" style={{backgroundColor: color}}  >
+                <span className="pokemon-number">
+                    #{pokemon.id.toString().padStart(3,"0")}
+                </span>
+
+                <button
+                    className="favorite-btn"
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        handleFavorite()
+                    }}
+                >
+                    {isFavorite ? "❤️" : "🤍"}
+                </button>
+
+            </div>
+
 
             <img
                 src={imageUrl}
-                alt={pokemon.name}
+                className="pokemon-image"
             />
 
-            <h3>
-                #{pokemon.id} - {pokemon.name}
+
+            <h3 className="pokemon-name">
+                {pokemon.name}
             </h3>
 
-            <div className="pokemon-types">
+
+            <div className="types">
+
                 {pokemon.types.map(t => (
                     <span
                         key={t.type.name}
@@ -86,18 +100,11 @@ function PokemonCard({ pokemon, favorites, setFavorites }) {
                         {t.type.name}
                     </span>
                 ))}
+
             </div>
 
-            {/* <p>{pokemon.types.map(t => t.type.name).join('/')}</p> */}
-
-            <button onClick={handleFavorite}>
-                {isFavorite ? "❤ Favoritado" : "⭐ Favoritar"}
-            </button>
-
         </div>
-
     )
-
 }
 
 export default PokemonCard

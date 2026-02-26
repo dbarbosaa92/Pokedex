@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 function Navbar() {
     
@@ -12,17 +12,30 @@ function Navbar() {
     return (
         <nav className='navbar'>
 
-            <a href="/dashboard"><h2>Pokédex</h2></a>
-            
+            <div className='navbar-left'>
+                <Link to="/dashboard" className="logo-link">
+                    <h2 className='logo'>Pokédex</h2>
+                </Link>
+            </div>           
 
-            <button onClick={() => navigate('/favorites')}>
-                Favoritos
-            </button>
+            <div className="navbar-right">
 
-            <button onClick={handleLogout}>
-                Logout
-            </button>
+                <button
+                    onClick={() => navigate('/favorites')}
+                    className="nav-btn"
+                >
+                    Favoritos
+                </button>
 
+                <button
+                    onClick={handleLogout}
+                    className="nav-btn"
+                >
+                    Logout
+                </button>
+
+            </div>
+                    
         </nav>
     )
 }

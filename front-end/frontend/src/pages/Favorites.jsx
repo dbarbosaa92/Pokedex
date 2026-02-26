@@ -57,28 +57,30 @@ function Favorites(){
 
                         return(
 
-                            <div
-                                key={fav.id}
-                                className="pokemon-card"
-                                style={{ backgroundColor: color }}
-                            >
+                            <div key={fav.id} className="pokedex-card">
+
+                                <div className="card-header">
+                                    <span className="pokemon-number">
+                                        #{fav.pokemonId}
+                                    </span>
+
+                                    <button
+                                        className="favorite-btn"
+                                        onClick={() => removeFavorite(fav.id)}
+                                    >
+                                        💔
+                                    </button>
+                                </div>
 
                                 <img
                                     src={imageUrl}
                                     alt={fav.pokemonName}
+                                    className="pokemon-image"
                                 />
 
-                                <h3>
-                                    #{fav.pokemonId} - {fav.pokemonName}
+                                <h3 className="pokemon-name">
+                                    {fav.pokemonName}
                                 </h3>
-
-                                <button
-                                    onClick={() =>
-                                        removeFavorite(fav.id)
-                                    }
-                                >
-                                    💔 Remover
-                                </button>
 
                             </div>
 

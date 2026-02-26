@@ -59,10 +59,28 @@ function Register(){
                         onChange={(e)=>setEmail(e.target.value)}   
                         required                 
                     />
+                    <input 
+                        type="password" 
+                        placeholder='Senha'
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required    
+                    />
 
+                    <button type='Submit'>Criar conta</button>
 
+                    <p>
+                        Já tem conta? {' '}
+                        <span
+                            className='link'
+                            onClick={() => navigate('/')}
+                        >
+                            Fazer login
+                        </span>
+                    </p>
             </form>
-
         </div>
     )
 }
+
+export default Register

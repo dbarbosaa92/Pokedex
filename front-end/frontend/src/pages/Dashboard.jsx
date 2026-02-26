@@ -3,6 +3,7 @@ import api from '../services/api'
 import Navbar from '../components/Navbar'
 import PokemonCard from '../components/PokemonCard'
 import axios from 'axios'
+import ScrollToTopButton from '../components/ScrollToTopButton'
 
 function Dashboard(){
     const [user, setUser] = useState(null)
@@ -21,17 +22,31 @@ function Dashboard(){
     }, [])
     
     const [pokemons, setPokemons] = useState([])
+    const [search, setSearch] = useState('')
     const [favorites, setFavorites] = useState([])
 
-    useEffect(() => {
+    const [offset, setOffset] = useState(0)
+    const [loading, setLoading] = useState(false)
 
-        async function loadPokemons(){
+    const limit = 20
+
+    const filteredPokemons = pokemons.filter(pokemon => 
+        pokemon.name.toLowerCase().includes(search.toLowerCase()) ||
+        pokemon.id.toString().includes(search)
+    )
+
+    async function loadPokemons(){
+        if(loading) return
+
+        setLoading(true)
+
+        try{
+
             const response = await axios.get(
-                "https://pokeapi.co/api/v2/pokemon?limit=151"
+                `https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`
             )
 
             const results = response.data.results
-
 
             const pokemonData = await Promise.all(
                 results.map(async (pokemon) => {
@@ -40,10 +55,35 @@ function Dashboard(){
                 })
             )
 
-            setPokemons(pokemonData)
+            setPokemons(prev => [...prev, ...pokemonData])
+
+            setOffset(prev => prev + limit)
+        } catch(err) {
+            console.error(err)
         }
+
+        setLoading(false)
+    }
+
+    useEffect(() => {
         loadPokemons()
     }, [])
+
+    useEffect(() => {
+        function handleScroll(){
+            const scrollTop = window.scrollY
+            const windowHeight = window.innerHeight
+            const fullHeight = document.documentElement.scrollHeight 
+
+            if(scrollTop + windowHeight >= fullHeight - 200){
+                loadPokemons()
+            }
+        }
+
+        window.addEventListener('scroll', handleScroll)
+
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [offset, loading]) 
 
     useEffect(() => {
         async function loadFavorites(){
@@ -62,20 +102,37 @@ function Dashboard(){
     return (
         <div>
 
-            <Navbar /> 
-
-            {/* <h1>Dashboard</h1>
-            {user ? (
-                <p>ID do usuário: {user.id}</p>
-            ) : (
-                <p>Carregando...</p>
-            )} */}
+            <Navbar />
 
             <div className='dashboard'>
-                <h1>Bem-vindo à Pokédex ◓⃙ 🎮</h1>
+                <h1>Bem-vindo à Pokédex ◓⃙</h1>
+
+                <div className="search-bar">
+
+                    <div className="search-icon">
+                        🔎
+                    </div>
+
+                    <input
+                        type="text"
+                        placeholder="Buscar Pokémon por nome ou número..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+
+                    {search && (
+                        <button
+                            className="clear-btn"
+                            onClick={() => setSearch('')}
+                        >
+                            ✕
+                        </button>
+                    )}
+
+                </div>
 
                 <div className='pokemon-grid'>
-                    {pokemons.map(pokemon => (
+                    {filteredPokemons.map(pokemon => (
                         <PokemonCard
                             key={pokemon.id}
                             pokemon={pokemon}
@@ -84,8 +141,15 @@ function Dashboard(){
                             />
                     ))}
                 </div>
-            </div>
 
+                {loading && (
+                    <p style={{textAlign:"center", margin:"20px"}}>
+                        Carregando mais Pokémon...
+                    </p>
+                )}
+
+            </div>
+            <ScrollToTopButton />
             
         </div>
     )

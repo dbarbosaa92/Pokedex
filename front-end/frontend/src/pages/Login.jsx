@@ -60,6 +60,17 @@ function Login() {
                     Entrar
                 </button>
 
+                <p>
+                    Não tem conta?{' '}
+                    <span
+                        className='link'
+                        onClick={()=>navigate('/register')}
+                    >
+                        Criar conta
+                    </span>
+
+                </p>
+
             </form>
 
         </div>
